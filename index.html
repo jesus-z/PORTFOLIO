@@ -42,7 +42,7 @@
         <div class="hologram-container">
             <div class="hologram-avatar">
                 <div class="avatar-face">
-                    <img src="perfil.png" alt="Foto de perfil">
+                    <img src="source/perfil.png" alt="Avatar Holográfico" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
                 </div>
                 <div class="avatar-rings">
                     <div class="ring ring-1"></div>
@@ -636,7 +636,7 @@ function toggleMusic() {
     
     if (musicEnabled) {
         if (!backgroundMusic) {
-            backgroundMusic = new Audio('../0827.MP3'); // Cambia por tu archivo
+            backgroundMusic = new Audio('source/0827.MP3'); // Cambia por tu archivo
             backgroundMusic.loop = true;
             backgroundMusic.volume = 0.3;
             backgroundMusic.crossOrigin = "anonymous";
@@ -1088,5 +1088,4 @@ function createExtraParticles() {
         });
     </script>
 </body>
-
 </html>
