@@ -34,7 +34,7 @@
 
     <!-- GRID CYBERPUNK -->
     <div class="cyber-grid"></div>
-
+<main id="cv-root">
     <!-- HEADER HOLOGRÁFICO EXTREMO -->
     <header class="mega-header">
         <div class="scanner-line"></div>
@@ -82,6 +82,7 @@
         <button class="floating-btn neon-tooltip" data-tooltip="Música" onclick="toggleMusic()">🎵</button>
         <button class="floating-btn neon-tooltip" data-tooltip="Efectos" onclick="toggleEffects()">⚡</button>
         <button class="floating-btn neon-tooltip" data-tooltip="Pantalla Completa" onclick="toggleFullscreen()">📺</button>
+        <button class="floating-btn neon-tooltip" data-tooltip="Descargar PDF" onclick="downloadCVasPDF()">🧾</button>
     </div>
 
     <div class="mega-container">
@@ -433,7 +434,7 @@
             </div>
         </section>
     </div>
-
+</main>
     <!-- AUDIO VISUALIZER -->
     <div class="audio-visualizer">
         <div class="audio-bar"></div>
@@ -444,6 +445,63 @@
         <div class="audio-bar"></div>
         <div class="audio-bar"></div>
     </div>
+<script>
+  // ===== Descargar CV en PDF =====
+  async function downloadCVasPDF() {
+    try {
+      // 1) Desactiva música/visual y aplica "pdf-mode" para limpiar efectos
+      const body = document.body;
+      body.classList.add('pdf-mode');
+
+      // Si tienes música corriendo, la pausamos para evitar pops en html2canvas
+      try { if (typeof backgroundMusic !== 'undefined' && backgroundMusic && !backgroundMusic.paused) backgroundMusic.pause(); } catch(e) {}
+
+      // 2) Asegura imágenes listas (especialmente el avatar)
+      await ensureImagesLoaded(document.getElementById('cv-root'));
+
+      // 3) Opciones de exportación
+      const opt = {
+        margin:       [10, 10, 10, 10],            // mm
+        filename:     'CV - JESUS E. ZEBALLOS.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  {
+          scale: 2,               // mayor nitidez
+          useCORS: true,          // para imágenes locales con same-origin o assets con CORS
+          backgroundColor: '#ffffff'
+        },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      // 4) Elemento a exportar
+      const sourceEl = document.getElementById('cv-root');
+
+      // 5) Lanzar exportación
+      await html2pdf().set(opt).from(sourceEl).save();
+
+    } catch (err) {
+      console.error('Error al generar PDF:', err);
+      alert('Ocurrió un problema al generar el PDF. Revisa la consola para más detalles.');
+    } finally {
+      // 6) Restaurar UI
+      document.body.classList.remove('pdf-mode');
+      try { if (typeof musicEnabled !== 'undefined' && musicEnabled && backgroundMusic) backgroundMusic.play(); } catch(e) {}
+    }
+  }
+
+  // Espera a que todas las imágenes dentro de un contenedor estén cargadas
+  function ensureImagesLoaded(root) {
+    const imgs = Array.from(root.querySelectorAll('img'));
+    if (imgs.length === 0) return Promise.resolve();
+
+    return Promise.all(imgs.map(img => {
+      return new Promise(resolve => {
+        if (img.complete) return resolve();
+        img.onload = () => resolve();
+        img.onerror = () => resolve(); // ignora errores para no bloquear export
+      });
+    }));
+  }
+</script>
 
     <script>
         // CURSOR PERSONALIZADO
@@ -1088,4 +1146,5 @@ function createExtraParticles() {
         });
     </script>
 </body>
+
 </html>
